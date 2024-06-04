@@ -8,7 +8,7 @@ class LinearRegression:
         return np.matmul(weights,x)
     
     def cost_function(self, weights, x, y):
-        prediction = LinearRegression().hypothesis(weights, x)
+        prediction = self.hypothesis(weights, x)
         total_x = len(x)
         error_func = prediction-y
         cost = (1/(2*total_x))*np.matmul(error_func, error_func)
