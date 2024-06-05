@@ -40,7 +40,7 @@ Task: Use the training data to train a linear regression model that predicts the
 
 model = LinearRegression()
 features = 2
-initial_weight = [0,1,0] # define the initial weights
+initial_weight = np.array([0,1,0]) # define the initial weights
 tv_add_spend = [2.1,4.8,3.2,5.4,1.9,3.5,4.9,2.3]
 online_ad_impressions = [15.3,20.1,18.9,22.7,14.1,19.5,21.3,17.9]
 sales = [8.5,19.2,12.1,22.9,7.3,14.1,20.5,9.7]

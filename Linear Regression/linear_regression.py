@@ -44,11 +44,16 @@ class LinearRegression:
             #print(f"weights: {weights} and Iteration: {iteration} and cost: {self.cost_function(weights, x, y)}")
             return self.gradient_descent_all_weights_recursive(weights, x, y, iteration-1, learning_rate, all_weights)
     
-    def train(self, x_train, y_train):
-        weights = np.ones(len(x_train))
-        w = self.gradient_descent(weights,x_train,y_train,iteration=100,learning_rate=0.01)
+    def train(self, x_train, y_train, weights=np.array([]), iteration=100, learning_rate=0.01):
+        w = self.gradient_descent(weights,x_train,y_train,iteration=iteration,learning_rate=learning_rate)
         return w
     
     def predict(self, weights, x_test):
         prediction = self.hypothesis(weights,x_test)
         return prediction
+    
+
+
+
+
+
