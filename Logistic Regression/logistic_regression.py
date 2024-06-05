@@ -20,13 +20,22 @@ class LogisticRegression:
     
     def gradient_descent(self, weights, x, y, iteration, learning_rate):
         total_x = len(x[1])
+        for _ in range(iteration):
+            h = self.sigmoid_function(weights,x)
+            weights = weights - (learning_rate/total_x)*np.matmul((h-y),np.transpose(x))
+            #print(f"weights: {weights} and cost: {self.cost_function(weights, x, y)}")
+
+        return weights
+        
+    def gradient_descent_recursive(self, weights, x, y, iteration, learning_rate):
+        total_x = len(x[1])
         h = self.sigmoid_function(weights,x)
         weights = weights - (learning_rate/total_x)*np.matmul((h-y),np.transpose(x))
         if iteration == 0:
             return weights
         else:
             #print(f"weights: {weights} and Iteration: {iteration} and cost: {self.cost_function(weights, x, y)}")
-            return self.gradient_descent(weights, x, y, iteration-1, learning_rate)
+            return self.gradient_descent_recursive(weights, x, y, iteration-1, learning_rate)
 
     def train(self, x_train, y_train):
         weights = np.ones(len(x_train))

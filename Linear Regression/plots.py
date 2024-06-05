@@ -9,7 +9,7 @@ y = [2,5,8,11,14,17,20]
 learning_rate = 0.05
 
 lr = LinearRegression()
-all_weights = lr.gradient_descent_all_weights(weights, x, iteration, y, learning_rate, all_weights=[])
+all_weights = lr.gradient_descent_all_weights_recursive(weights, x, y, iteration, learning_rate, all_weights=[])
 iteration = []
 cost = []
 weight1 = []
@@ -44,4 +44,32 @@ ax.plot_surface(weight1_grid, weight2_grid, cost_values, cmap='viridis')
 ax.set_xlabel('Weight 1')
 ax.set_ylabel('Weight 2')
 ax.set_zlabel('Cost')
+plt.show()
+
+
+# Plot4: Linear function animation each iteration
+
+import matplotlib.animation as animation
+
+fig, ax = plt.subplots()
+
+# Scatter plot of original data
+scatter = ax.scatter(x[1], y, label='Actual')
+
+# Line plot for prediction
+line, = ax.plot(x[1], lr.predict(all_weights[0], x))
+
+def update(i):
+    line.set_ydata(lr.predict(all_weights[i], x))
+    return line,
+
+def init():
+    return line,
+
+ani = animation.FuncAnimation(fig, update, frames=len(all_weights), init_func=init, blit=True)
+
+ax.set_xlabel('x')
+ax.set_ylabel('y')
+ax.legend()
+
 plt.show()
