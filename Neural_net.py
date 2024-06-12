@@ -28,6 +28,20 @@ class SimpleNeuralNetwork:
     def sigmoid_function(self, weights, x):
         return 1/(1+np.exp(-np.matmul(weights,x)))
     
+    def linear_function(self, weights, x):
+        return np.matmul(weights,x)
+    
+    def activation_function(self, x):
+        return (1/(1+np.exp(-x)))
+    
+    def neuron_output(self, weights, x):
+        return self.activation_function(self.linear_function(weights, x))
+    
+    def sigmoid_gradient(self, z):
+        return self.activation_function(z) * (1 - self.activation_function(z))
+    
+    def cost_function(self, x, y, weights):
+
     def feed_forward(self, x, weights):
         a = x
         for weight in weights:
@@ -64,7 +78,7 @@ class SimpleNeuralNetwork:
         cost = -(1/m)*(c1+c2+regularization)
         return cost
     
-    def backpropagation(self, x, y, w, depth, nodes):
+    def backpropagation(self, x, y, w, depth, nodes): # BIG BUG HERE, YOU ARE NOT UPDATING THE WEIGHTS CORRECTLY, for EACH TRAINING EXAMPLE YOU NEED TO UPDATE THE WEIGHTS
         # for each layer do forward propagation and generate cost
         # start from end layer
         output = self.forward_propagation(x, w, depth)

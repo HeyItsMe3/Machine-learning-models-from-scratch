@@ -125,10 +125,10 @@ def predict(Theta1, Theta2, X):
 
 def main():
     start  = time.time()
-    mat_data = scipy.io.loadmat('Neural-Network/data1.mat')
-    X = mat_data['X']
-    y = mat_data['y']
-    
+    data = np.load('Neural-Network/data.npy', allow_pickle=True)
+    X = data.item().get('X')
+    y = data.item().get('y')
+
     input_layer_size = 400
     hidden_layer_size = 25
     num_labels = 10

@@ -1,6 +1,15 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
+"""
+this class is a simple implementation of a neural network with backpropagation algorithm
+activation function used is sigmoid 
+each layer has a bias term
+bias is already added in the input data
+input are in this format: [[1,1,1,1],[2,4,5,6],[3,7,8,9]], here bias is already added, there are three feeatures and 4 training examples
+each column in the input is training example
+output is in this format: [[1,0,1,3]], here there are 4 training examples and 1 output classes
+"""
 class NeuralNetwork:
     def __init__(self, depth, nodes, lambda_, epochs=100, learning_rate=0.001, batch_size=32, seed=0):
         self.depth = depth
@@ -13,13 +22,11 @@ class NeuralNetwork:
         self.seed = seed
         self.initialize_weights()
 
-    # input weight will be a list of numpy arrays like [np.array([1,2,3]), np.array([4,5,6])] 
-    # where weight from layer n will look like [1,2,3], first weight is bias
     def initialize_weights(self):
         for i in range(self.depth):
-            # Xavier initialization
+            # Xavier initialization (usually used for tanh and sigmoid activation functions)
             self.weights.append(np.random.randn(self.nodes[i+1], self.nodes[i]+1) * np.sqrt(1 / self.nodes[i]))
-            # He initialization
+            # He initialization (usually used for ReLU activation function)
             #self.weights.append(np.random.randn(self.nodes[i+1], self.nodes[i]+1))
             # Random initialization
             #self.weights.append(np.ones((self.nodes[i+1], self.nodes[i]+1)))
@@ -106,6 +113,7 @@ class NeuralNetwork:
             w[i] = w[i] - self.learning_rate*gradient[i] 
                  
         return w
+    
 
     def compute_numerical_gradient(self, x, y, w, depth, nodes):
         epsilon = 1e-5
@@ -180,24 +188,4 @@ class NeuralNetwork:
 
     def predict(self, x):
         return self.feed_forward(x, self.weights)
-    
-    def evaluate(self, x, y):
-        prediction = self.predict(x)
-        return np.mean(np.argmax(prediction, axis=0) == np.argmax(y, axis=0))
-    
-    def test(self, x, y):
-        return self.evaluate(x, y)
-    
-    def save(self, filename):
-        np.save(filename, self.weights)
-
-    def load(self, filename):
-        self.weights = np.load(filename)
-        return self.weights
-    
-    def get_weights(self):
-        return self.weights
-    
-    def set_weights(self, weights):
-        self.weights = weights
     

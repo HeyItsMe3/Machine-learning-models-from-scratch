@@ -1,7 +1,7 @@
 import scipy.io
 import numpy as np
 import matplotlib.pyplot as plt
-from simple_classification_neural_network import NeuralNetwork
+from simple_sigmoidal_neural_network_m import NeuralNetwork
 
 
 
@@ -23,14 +23,14 @@ def run():
     #print(x)
     #print(y)
     y = y.T
-    nn = NeuralNetwork(2, [400,25,1], 2, epochs=100, learning_rate=0.01, batch_size=2500, seed=0) 
+    nn = NeuralNetwork(2, [400,25,1], 2, epochs=50, learning_rate=0.01, batch_size=2500, seed=0) 
     w,cost = nn.train(x, y)
     #print(f"predicted output: {nn.predict(x)}")
-    #print(f"binary prediction: {(nn.predict(x) > 0.5).astype(int)}")
-    #print(nn.test(x, y))
+    p = nn.predict(x)
     #print(nn.compute_numerical_gradient(x, y, w, nn.depth, nn.nodes))
     #print(nn.check_gradients(x, y))
     # draw a plot between cost and epochs
+    print(f'Training Set Accuracy: {np.mean(p == y.flatten()) * 100}%')
     epch = np.arange(nn.epochs,0,-1)
     plt.plot(epch,cost)
     plt.xlabel('Epochs')
