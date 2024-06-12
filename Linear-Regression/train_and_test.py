@@ -47,7 +47,7 @@ sales = [8.5,19.2,12.1,22.9,7.3,14.1,20.5,9.7]
 x_train = [[1,1,1,1,1,1,1,1],tv_add_spend, online_ad_impressions]
 y_train = sales
 
-iteration = 1000
+iteration = 500
 learning_rate = 0.00535 # choose the best learning rate
 w = model.gradient_descent(initial_weight,x_train,y_train,iteration,learning_rate)
 print(w)

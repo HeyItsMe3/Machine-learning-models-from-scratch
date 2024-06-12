@@ -164,13 +164,32 @@ class NeuralNetwork:
             w[i] = w[i] - self.learning_rate*gradient[i]  """
                  
         return gradient[::-1]
+    
+    def train(self, x, y):
+        w = self.weights
+        cost = []
+        for i in range(self.epochs):
+            for j in range(0,len(x),self.batch_size):
+                x_batch = x[j:j+self.batch_size]
+                y_batch = y[j:j+self.batch_size]
+                gradient = self.backpropagation(x_batch, y_batch, self.depth, self.nodes)
+                for k in range(self.depth):
+                    w[k] = w[k] - self.learning_rate*gradient[k] 
+                cost.append(self.cost_function(x_batch, y_batch, w))
+                print(f"epoch: {i}, cost: {cost[-1]}")
+                print(f"weights: {w}")
+                
+        return w, cost
+    
+    def predict(self, x, w):
+        return self.feed_forward(x,w)
         
 
-nn = NeuralNetwork(3, [2, 2, 2, 1], 0.01)
+nn = NeuralNetwork(3, [2, 2, 2, 1], 0.001, epochs=100, learning_rate=0.01, batch_size=2, seed=0)
 x = np.array([[3,4],[4,5]])
 # add bias
 x = np.insert(x, 0, np.ones(len(x)), axis=1)
-y = np.array([[1],[2]])
+y = np.array([[0],[1]])
 w = nn.weights
 print(f"weights: {w}")  
 print(nn.sigmoid_function(w[0],x[0])) # for each training example, here input should be array of metrics
@@ -181,4 +200,13 @@ print(nn.cost_function(x,y,w)) # for all training examples
 print(nn.Delta(nn.depth, nn.nodes)) # for all training examples
 d = nn.Delta(nn.depth, nn.nodes)
 print(nn.backpropagation(x,y,nn.depth,nn.nodes)) # for all training examples
+w_train, cost = nn.train(x,y) # for all training examples
+print(nn.predict(x[1], w_train)) # for all training examples
 
+# draw a plot between cost and epochs
+epch = np.arange(nn.epochs,0,-1)
+plt.plot(epch,cost)
+plt.xlabel('Epochs')
+plt.ylabel('Cost')
+plt.title('Cost vs Epochs')
+plt.show()
