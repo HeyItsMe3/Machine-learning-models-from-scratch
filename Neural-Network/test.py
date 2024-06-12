@@ -34,7 +34,7 @@ y = np.array([[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 2, 2]])
 2, 2, 2
  """
 
-""" x = np.transpose(X)
+x = np.transpose(X)
 nn = NeuralNetwork(3, [2,10,10,1], 0, epochs=2000, learning_rate=0.8, batch_size=4, seed=0) 
 w,cost = nn.train(x, y)
 x_test = [[1,5.1, 3.5],
@@ -53,8 +53,4 @@ plt.xlabel('Epochs')
 plt.ylabel('Cost')
 plt.title('Cost vs Epochs')
 plt.show()
- """
-a = np.array([1,2,3])
-a = np.array([0.1,0.4,0.3])
-a = np.reshape(a, (1,3))
-print(a)
+

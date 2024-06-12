@@ -23,7 +23,7 @@ def run():
     #print(x)
     #print(y)
     y = y.T
-    nn = NeuralNetwork(2, [400,25,1], 2, epochs=50, learning_rate=0.01, batch_size=2500, seed=0) 
+    nn = NeuralNetwork(2, [400,25,1], 0, epochs=20, learning_rate=0.001, batch_size=0, seed=0) 
     w,cost = nn.train(x, y)
     #print(f"predicted output: {nn.predict(x)}")
     p = nn.predict(x)

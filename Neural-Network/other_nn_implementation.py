@@ -123,6 +123,7 @@ def predict(Theta1, Theta2, X):
     
     return p + 1
 
+
 def main():
     start  = time.time()
     data = np.load('Neural-Network/data.npy', allow_pickle=True)
@@ -142,6 +143,9 @@ def main():
 
     end = time.time()
     print(f"Time taken: {end-start} seconds")
+
+    cost = nn_cost_function(np.concatenate([Theta1.ravel(), Theta2.ravel()]), input_layer_size, hidden_layer_size, num_labels, X, y, lambda_)[0]
+    print(cost)
 
 if __name__ == '__main__':
     main()

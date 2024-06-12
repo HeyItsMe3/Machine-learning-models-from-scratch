@@ -9,6 +9,7 @@ bias is already added in the input data
 input are in this format: [[1,1,1,1],[2,4,5,6],[3,7,8,9]], here bias is already added, there are three feeatures and 4 training examples
 each column in the input is training example
 output is in this format: [[1,0,1,3]], here there are 4 training examples and 1 output classes
+
 """
 class NeuralNetwork:
     def __init__(self, depth, nodes, lambda_, epochs=100, learning_rate=0.001, batch_size=32, seed=0):
@@ -109,10 +110,8 @@ class NeuralNetwork:
         
         # update weights
         gradient = gradient[::-1]
-        for i in range(depth-1,-1,-1):
-            w[i] = w[i] - self.learning_rate*gradient[i] 
                  
-        return w
+        return gradient
     
 
     def compute_numerical_gradient(self, x, y, w, depth, nodes):
@@ -149,17 +148,23 @@ class NeuralNetwork:
     def train(self, x, y):
         c = []
         # for each epoch do backpropagation and update weights
+        w = self.weights
         for epoch in range(self.epochs):
-            for i in range(0, len(x[1]), self.batch_size):
-                x_batch = x[:,i:i+self.batch_size] # get batch of training examples
-                y_batch = y[:,i:i+self.batch_size] # get batch of labels ?????
-                # update weights
-                self.weights = self.backpropagation(x_batch, y_batch, self.weights, self.depth, self.nodes)
-                print(f"weights: {self.weights}")
-                print(f"cost: {self.cost_function(x_batch, y_batch, self.weights)}")
-                print(f"epoch: {epoch}")
-                print(f"batch: {i}")
-                print(f"")
+            #for i in range(0, len(x[1]), self.batch_size):
+            #    x_batch = x[:,i:i+self.batch_size] # get batch of training examples
+            #    y_batch = y[:,i:i+self.batch_size] # get batch of labels ?????
+            # update weights
+            print(f"weights: {w} in epoch {epoch}")
+            gradient = self.backpropagation(x, y, w, self.depth, self.nodes)
+            print(f"gradient: {gradient}")
+            for i in range(self.depth-1,-1,-1):
+                w[i] = w[i] - self.learning_rate*gradient[i] 
+
+            #print(f"weights: {w}")
+            print(f"cost: {self.cost_function(x, y, w)}")
+            #print(f"epoch: {epoch}")
+            #print(f"batch: {i}")
+            print(f"")
             # store cost for each epoch
             c = np.insert(c, 0, self.cost_function(x, y, self.weights), axis=0)  
     
