@@ -13,7 +13,9 @@ class LogisticRegressionRegularised:
         ones_y = np.ones(len(y))
         ones_h = np.ones(len(prediction))
         c1 = np.matmul(np.transpose(y),np.log(prediction))
-        regularization = (lambda_/2)*np.matmul(weights,np.transpose(weights))
+        #ignore bias term
+        regularization = (lambda_/2)*np.matmul(weights[1:],np.transpose(weights[1:]))
+        #regularization = (lambda_/2)*np.matmul(weights,np.transpose(weights))
         c2 = np.matmul(np.transpose(ones_y-y),np.log(ones_h-prediction))
         cost = -(1/total_x)*(c1+c2+regularization)
         return cost
@@ -40,8 +42,8 @@ class LogisticRegressionRegularised:
         return all_weights
     
     def train(self, x_train, y_train, lambda_=0.5, weights=np.array([]), iteration=100, learning_rate=0.01):
-        w = self.gradient_descent(weights,x_train,y_train,iteration=iteration,learning_rate=learning_rate, lambda_=lambda_)
-        return w
+        return self.gradient_descent(weights,x_train,y_train,iteration=iteration,learning_rate=learning_rate, lambda_=lambda_)
+
     
     def predict(self, weights, x_test):
         prediction = self.sigmoid_function(weights,x_test)

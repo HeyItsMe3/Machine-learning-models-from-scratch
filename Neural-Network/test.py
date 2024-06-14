@@ -41,6 +41,7 @@ x_test = [[1,5.1, 3.5],
     [1,5.7, 3.8],
     [1,5.1, 3.8]]
 x_test = np.transpose(x_test)
+#print(f"forward propagation: {nn.forward_propagation(x_test, w, nn.depth)}")
 print(f"predicted output: {nn.predict(x_test)}")
 print(f"binary prediction: {(nn.predict(x) > 0.5).astype(int)}")
 #print(nn.test(x, y))

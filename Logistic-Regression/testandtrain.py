@@ -1,4 +1,4 @@
-from logistic_regression import LogisticRegression
+from logistic_regression_regularised import LogisticRegressionRegularised
 import numpy as np
 
 # test the model
@@ -36,7 +36,7 @@ test data to predict the heart disease
 
  """
 
-model = LogisticRegression()
+model = LogisticRegressionRegularised()
 
 
 total_features = 5
@@ -50,7 +50,7 @@ heart_disease = [1,1,0,1,0,1]
 
 x_train = [[1,1,1,1,1,1],age,bmi,smoking,family_history,cholestrol_level]
 y_train = heart_disease
-iteration = 200
+iteration = 20
 learning_rate = 0.01
 
 """ w = model.gradient_descent(weights,x_train,y_train,iteration,learning_rate)
@@ -63,5 +63,6 @@ for result in prediction:
  """
 x_test = [[1,1],[38,52],[24,29],[1,1],[0,1],[190,220]]
 
-a = model.train(x_train,y_train)
+model.gradient_descent(weights,x_train,y_train,iteration,learning_rate, lambda_=0.5)
+a = model.train(x_train,y_train,lambda_=0.5,weights=weights,iteration=iteration,learning_rate=learning_rate)
 print(model.predict(a,x_test))
