@@ -12,7 +12,7 @@ output is in this format: [[1,0,1,3]], here there are 4 training examples and 1 
 
 """
 class NeuralNetwork:
-    def __init__(self, depth, nodes, lambda_, epochs=100, learning_rate=0.001, batch_size=32, seed=0):
+    def __init__(self, depth, nodes, lambda_, bias = True, epochs=100, learning_rate=0.001, batch_size=32, seed=0):
         self.depth = depth
         self.lambda_ = lambda_
         self.nodes = nodes
@@ -21,6 +21,7 @@ class NeuralNetwork:
         self.epochs = epochs
         self.batch_size = batch_size
         self.seed = seed
+        self.bias = bias
         self.initialize_weights()
 
     def initialize_weights(self):
@@ -39,10 +40,15 @@ class NeuralNetwork:
         a = x # input layer
         for weight in weights:
             a = self.sigmoid_function(weight,a) # apply sigmoid function
-            # random bias
-            bias_ones = np.ones(len(a[0]))
-            #bias_random = np.random.randn(len(a[0])) * np.sqrt(1 / len(a[0]))
-            a = np.insert(a,0,bias_ones, axis=0) # add bias
+            
+            if self.bias:
+                # add bias to the output
+                bias_ones = np.ones(len(a[0]))
+                a = np.insert(a, 0, bias_ones, axis=0)
+            else:
+                zero_bias = np.zeros(len(a[0]))
+                a = np.insert(a, 0, zero_bias, axis=0)
+
         # return output layer
         return a[1:]
     
@@ -53,9 +59,14 @@ class NeuralNetwork:
             # for each layer apply sigmoid function and add bias
             if i < depth-1:
                 a = self.sigmoid_function(w[i],a) # apply sigmoid function
-                bias_ones = np.ones(len(a[0]))
-                #bias_random = np.random.randn(len(a[0])) * np.sqrt(1 / len(a[0])) # cost is fluctuating to much with random bias
-                a = np.insert(a, 0, bias_ones, axis=0) # add bias
+
+                if self.bias:
+                    bias_ones = np.ones(len(a[0]))
+                    a = np.insert(a, 0, bias_ones, axis=0) # add bias
+                else:
+                    zero_bias = np.zeros(len(a[0]))
+                    a = np.insert(a, 0, zero_bias, axis=0)
+
                 total_a.append(a)
             # for last layer apply sigmoid function
             else:

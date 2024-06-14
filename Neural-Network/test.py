@@ -35,14 +35,14 @@ y = np.array([[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 2, 2]])
  """
 
 x = np.transpose(X)
-nn = NeuralNetwork(3, [2,10,10,1], 0, epochs=2000, learning_rate=0.8, batch_size=4, seed=0) 
+nn = NeuralNetwork(3, [2,10,10,1], 0, bias = False, epochs=1000, learning_rate=0.8, batch_size=4, seed=0) 
 w,cost = nn.train(x, y)
 x_test = [[1,5.1, 3.5],
     [1,5.7, 3.8],
     [1,5.1, 3.8]]
 x_test = np.transpose(x_test)
 print(f"predicted output: {nn.predict(x_test)}")
-#print(f"binary prediction: {(nn.predict(x) > 0.5).astype(int)}")
+print(f"binary prediction: {(nn.predict(x) > 0.5).astype(int)}")
 #print(nn.test(x, y))
 #print(nn.compute_numerical_gradient(x, y, w, nn.depth, nn.nodes))
 #print(nn.check_gradients(x, y))
