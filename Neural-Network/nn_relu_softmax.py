@@ -27,13 +27,20 @@ class NeuralNetworkReLuSoftmax:
             # Xavier initialization (usually used for tanh and sigmoid activation functions)
             #self.weights.append(np.random.randn(self.nodes[i+1], self.nodes[i]+1) * np.sqrt(1 / self.nodes[i]))
             # He initialization (usually used for ReLU activation function)
-            #self.weights.append(np.random.randn(self.nodes[i+1], self.nodes[i]+1))
+            self.weights.append(np.random.randn(self.nodes[i+1], self.nodes[i]+1)-0.5)
+            #kaiming initialization
+            #self.weights.append(np.random.randn(self.nodes[i+1], self.nodes[i]+1) * np.sqrt(2 / self.nodes[i]))
             # Random initialization
             #self.weights.append(np.ones((self.nodes[i+1], self.nodes[i]+1)))
             # constant initialization
-            self.weights.append(np.random.randn(self.nodes[i+1], self.nodes[i]+1) * 0.01)
+            #self.weights.append(np.random.randn(self.nodes[i+1], self.nodes[i]+1) * 0.01)
     def softmax(self, z):
-        return np.exp(z) / np.sum(np.exp(z), axis=0)
+        
+        z_scaled = (z-np.min(z))/(np.max(z)-np.min(z)) # scale down large z value which might cause overflow(does not work much)
+        # why weights in hidden layers are too large????
+        return np.exp(z_scaled) / np.sum(np.exp(z_scaled), axis=0)
+        #exp = np.exp(z-np.max(z)) # scale down large z value which might cause overflow
+        #return exp / np.sum(exp, axis=0)
 
     def ReLu(self, z):
         return np.maximum(0,z)
@@ -41,8 +48,8 @@ class NeuralNetworkReLuSoftmax:
     def z_function(self, weights, x):
         return np.matmul(weights,x)
     
-    def Relu_derivative(self, x):
-        return np.where(x <= 0, 0, 1)
+    def Relu_derivative(self, z):
+        return z > 0
     
     def feed_forward(self, x, weights):
         a = x # input layer
@@ -93,7 +100,20 @@ class NeuralNetworkReLuSoftmax:
         #print(f"all layer's output: {total_a}")
         return total_a
 
+    def one_hot(self,Y):
+        one_hot_Y = np.zeros((np.size(Y), np.max(Y) + 1))
+        one_hot_Y[np.arange(np.size(Y)), Y] = 1
+        one_hot_Y = one_hot_Y.T
+        return one_hot_Y
     
+    def ymatrix(self, y):
+        m = len(y[0])
+        num_labels = 11
+        y_matrix = np.zeros((num_labels, m))
+        for i in range(m):
+            y_matrix[y[0][i] - 1, i] = 1
+        return y_matrix
+        
     def backpropagation(self, x, y, w, depth , nodes):
         # for each layer do forward propogation
         # start from end layer
@@ -103,7 +123,8 @@ class NeuralNetworkReLuSoftmax:
         for i in range(depth,0,-1):
             Delta = np.zeros((nodes[i],nodes[i-1]))
             if i == depth:
-                delta = output[i]-y # calculate delta for last layer
+                #delta = output[i]-self.one_hot(y) # calculate delta for last layer
+                delta = output[i]-self.ymatrix(y)
                 #print(f"delta for layer {i}: {delta}")
             else:
                 delta = np.matmul(np.transpose(w[i]), delta) * (self.Relu_derivative(output[i]))
@@ -136,28 +157,34 @@ class NeuralNetworkReLuSoftmax:
             #print(f"gradient: {gradient}")
             for i in range(self.depth-1,-1,-1):
                 w[i] = w[i] - self.learning_rate*gradient[i] 
-
+            #print(f"Weight per epoch {epoch}: {w}")
                 # for every 50 iterations check accuracy
-            if epoch % 50 == 0:
-               print(f"accuracy: {np.mean(self.predict(x, w) == np.argmax(y, axis=0))}")
+            #if epoch % 50 == 0:
+            #   print(f"accuracy: {np.mean(self.predict(x, w) == np.argmax(y, axis=0))}")
 
             #print(f"weights: {w}")
             #print(f"epoch: {epoch}")
             #print(f"batch: {i}")
-    
-        return self.weights
+
+        # store weights
+        self.store_weight(w)
+        
+        return w
+
+    def accuracy_on_training_data(self, x, y, w):
+        return np.mean(self.predict(x, w) == np.argmax(y, axis=0))
 
 
     def predict(self, x, w):
         p = self.feed_forward(x, w)
+        print(f"output node: {p}")
         return np.argmax(p, axis=0)
     
-    def store_weight(self, x, y):
-        w = self.train(x,y)
-        np.save("Neural-Network/weight.npy", w)
+    def store_weight(self, w):
+        np.save('Neural-Network/weight.npy', {'w': w})
 
 def main():
-    nn = NeuralNetworkReLuSoftmax(2, [400,25,10], 0, bias = True, epochs=1000, learning_rate=0.1)
+    nn = NeuralNetworkReLuSoftmax(3, [400,10,10,11], 0, bias = True, epochs=1000, learning_rate=0.1)
     data = np.load('Neural-Network/data.npy', allow_pickle=True)
     X = data.item().get('X')
     y = data.item().get('y')
@@ -166,22 +193,30 @@ def main():
     y = y.T
 
     w = nn.weights
-    print(f"weights: {w}") 
+    #print(f"weights: {w}") 
 
+    # backpropagation
+    #print(nn.backpropagation(x, y, w, nn.depth, nn.nodes))
     #train
     w = nn.train(x, y)
 
+    print(f"weight after training: {w}")
+
     # get weights after training
-    """ weight = np.load('Neural-Network/weight.npy', allow_pickle=True)
-    w = weight.item.get('w')
-    x = x[:, 6]
-    x_test = np.reshape(x,(len(x),1))
-    print(f"predicted output: {nn.predict(x_test, w)}")
+    #weight = np.load('Neural-Network/weight.npy', allow_pickle=True)
+    #w = weight.item.get('w')
+    #x = x[:, 1500]
+    #x_test = np.reshape(x,(len(x),1))
+    #print(f"predicted output: {nn.predict(x_test, w)}")
+    print(f"accuracy: {nn.accuracy_on_training_data(x, y, w)}")
     
-    first_column = x[:, 6]
+"""   first_column = x[:, 800]
     first_column = first_column.T
     image = first_column.reshape((20, 20))*255
     plt.gray()
     plt.imshow(image, interpolation='nearest')
     plt.show() """
 main()
+
+
+# finding, weight of one training example is input weight of next training example
