@@ -214,6 +214,3 @@ for epoch in range(25):
     plt.legend(loc='best')
     plt.grid()
     plt.show()
-Epoch 24
-Train accuracy: 1.0
-Val accuracy: 0.9809

@@ -22,17 +22,17 @@ def loss(y, out):
     return np.sum(loss)/len(y)
 
 def back_propagation(x,y,w1,w2,learning_rate=0.1):
-    z1 = x.dot(w1) # (3,30)*(30,5) = (3,5)
-    a1 = sigmoid(z1) # (3,5)
+    z1 = x.dot(w1) # (1,30)*(30,5) = (1,5)
+    a1 = sigmoid(z1) # (1,5)
 
-    z2 = a1.dot(w2) # (3,5)*(5,3) = (3,3)
-    a2 = sigmoid(z2) # (3,3)
+    z2 = a1.dot(w2) # (1,5)*(5,3) = (1,3)
+    a2 = sigmoid(z2) # (1,3)
 
-    d2 = a2 - y # (3,3)
-    d1 = d2.dot(w2.T) * a1 * (1-a1) # [(3,3)*(3,5)]*(3,5)*(3,5) = (3,5)
+    d2 = a2 - y # (1,3)
+    d1 = d2.dot(w2.T) * a1 * (1-a1) # [(1,3)*(3,5)]*(1,5)*(1,5) = (1,5)
 
-    w1_grad = x.T.dot(d1) # (30,3)*(3,5) = (30,5)
-    w2_grad = a1.T.dot(d2) # (5,3)*(3,3) = (5,3)
+    w1_grad = x.T.dot(d1) # (30,1)*(1,5) = (30,5)
+    w2_grad = a1.T.dot(d2) # (5,1)*(1,3) = (5,3)
 
     w1 = w1 - learning_rate*w1_grad
     w2 = w2 - learning_rate*w2_grad
@@ -45,13 +45,9 @@ def train(x, y, w1,w2, learning_rate=0.01, epochs=1000):
     for i in range(epochs):
         l = []
         for j in range(len(x)):
-            print(f"weights before backprop: {[w1,w2]}")
             out = forward_propagation(x[j], w1, w2)
             l.append(loss(y[j], out))
             w1,w2 = back_propagation(x[j], y[j], w1,w2, learning_rate)
-            print(f"weights after backprop: {[w1,w2]}")
-            if j==3:
-                break
         print(f"epoch: {i}, loss: {np.mean(l)}, accuracy: {(1-np.mean(l))*100}")
         acc.append((1-np.mean(l))*100)
         losses.append(np.mean(l))
@@ -106,7 +102,8 @@ def main():
     x = [np.array(a).reshape(1,30), np.array(b).reshape(1,30), np.array(c).reshape(1,30)]
     y = np.array(y).reshape(3,3)
     w1,w2 = weights()
-    print(f"initial weights: {[w1,w2]}")
-    w1, w2, losses, acc = train(x, y, w1,w2, epochs=1, learning_rate=0.3)
+    #print(f"initial weights: {[w1,w2]}")
+    w1, w2, losses, acc = train(x, y, w1,w2, epochs=10, learning_rate=0.3)
     
 main()
+
