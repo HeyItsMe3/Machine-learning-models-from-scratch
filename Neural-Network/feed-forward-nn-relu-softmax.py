@@ -24,28 +24,39 @@ class ReLuSoftmaxFeedForwardNeuralNetwork():
 
     def weight_init(self):
         for i in range(self.depth):
-            self.weights.append(np.random.rand(self.nodes[i+1], self.nodes[i]))
+            self.weights.append(np.random.rand(self.nodes[i+1], self.nodes[i])*0.01)
         return self.weights
     
     def bias_term(self):
         for i in range(self.depth):
-            self.b.append(np.ones((1, self.nodes[i+1])))
+            if self.bias:
+                self.b.append(np.ones((1, self.nodes[i+1])))
+            else:
+                self.b.append(np.zeros((1, self.nodes[i+1])))
         return self.b
 
     def z_function(self, x, w, b):
         return np.dot(x,w.T) + b
     
     def relu(self, z):
-        return max(0, z)
+        return np.maximum(0, z)
+    
+    def relu_derivative(self, z):
+        return z > 0
     
     def softmax(self, z):
-        return np.exp(z) / np.sum(np.exp(z), axis=0)
+        z_scaled = (z-np.min(z))/(np.max(z)-np.min(z))
+        return np.exp(z_scaled) / np.sum(np.exp(z_scaled), axis=0)
     
     def feed_forward(self, x, w, b):
         a = x
         for i in range(self.depth):
-            z = self.z_function(a, w[i], b[i])
-            a = self.sigmoid_activation_function(z)
+            if i != self.depth-1:
+                z = self.z_function(a, w[i], b[i])
+                a = self.relu(z)
+            else:
+                z = self.z_function(a, w[i],b[i])
+                a = self.softmax(z)
 
         return a
     
@@ -55,8 +66,13 @@ class ReLuSoftmaxFeedForwardNeuralNetwork():
         a = x
         all_layer_activation = [x]
         for i in range(self.depth):
-            z = self.z_function(a, w[i], b[i])
-            a = self.sigmoid_activation_function(z)
+            if i != self.depth-1:
+                z = self.z_function(a, w[i], b[i])
+                a = self.relu(z)
+            else:
+                z = self.z_function(a, w[i], b[i])
+                a = self.softmax(z)
+                
             all_layer_activation.append(a)
         
         return all_layer_activation
@@ -69,10 +85,14 @@ class ReLuSoftmaxFeedForwardNeuralNetwork():
             if i == self.depth:
                 delta = output[i] - y
             else:
-                delta = np.dot(delta,w[i]) * (output[i] * (1-output[i]))
+                delta = np.dot(delta,w[i]) * self.relu_derivative(output[i])
             
             grad_weight = delta.T * output[i-1]
-            grad_bias = np.mean(delta, axis=0)
+
+            if self.bias:
+                grad_bias = np.mean(delta, axis=0)
+            else:
+                grad_bias = 0
 
             dw.append(grad_weight)
             db.append(grad_bias)
@@ -131,9 +151,16 @@ def main():
 
     x = [a,b,c]
     y = np.array(y).reshape(3,3)
-    nn = SigmoidalFeedForwardNeuralNetwork(nodes=[30,10,3], learning_rate=0.1, epoch=100, bias=True)
+    
+    # Hyperparameters
+    nodes = [30,5,3]
+    learning_rate = 0.1
+    epoch = 500
+    bias = False
 
-    w, b = nn.train(x, y, nn.weights, nn.b, epoch=500, learning_rate=0.3)
+    nn = ReLuSoftmaxFeedForwardNeuralNetwork(nodes=nodes, learning_rate=learning_rate, epoch=epoch, bias=bias)
+
+    w, b = nn.train(x, y, nn.weights, nn.b, epoch, learning_rate)
     print(nn.predict(x[0], w, b))
     print(nn.predict(x[1], w, b))
     print(nn.predict(x[2], w, b))
