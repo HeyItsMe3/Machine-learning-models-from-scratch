@@ -120,7 +120,7 @@ class SigmoidalFeedForwardNeuralNetworkMetricsApproach():
 
     def weight_init(self):
         for i in range(self.depth):
-            self.weights.append(np.random.rand(self.nodes[i+1], self.nodes[i]))
+            self.weights.append(np.random.rand(self.nodes[i+1], self.nodes[i])*0.01)
         return self.weights
     
     def bias_term(self):
@@ -162,6 +162,7 @@ class SigmoidalFeedForwardNeuralNetworkMetricsApproach():
         dw = []
         db = []
         m = len(y)
+        
         for i in range(self.depth, 0, -1):
             if i == self.depth:
                 delta = output[i] - y
@@ -182,6 +183,9 @@ class SigmoidalFeedForwardNeuralNetworkMetricsApproach():
         for j in range(len(w), 0, -1):
             w[j-1] = w[j-1] - learning_rate*dw[-j]
             b[j-1] = b[j-1] - learning_rate*db[-j]
+        
+        #print(f"weight gradient: {dw}")
+        
 
         return w, b
     
@@ -249,6 +253,6 @@ def main():
     print(nn_metrics.predict(x[2], w, b))
  """
     
-main()
+
 
 

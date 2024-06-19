@@ -10,7 +10,7 @@ Parameters and Dimensions
     Depth => 3
     weights => (3,30), (2,3), (3,2)
 """
-class ReLuSoftmaxFeedForwardNeuralNetwork():
+class ReLuFeedForwardNeuralNetwork():
     def __init__(self, nodes, learning_rate, epoch, bias = True):
         self.depth = len(nodes)-1
         self.nodes = nodes
@@ -48,6 +48,9 @@ class ReLuSoftmaxFeedForwardNeuralNetwork():
         z_scaled = (z-np.min(z))/(np.max(z)-np.min(z))
         return np.exp(z_scaled) / np.sum(np.exp(z_scaled), axis=0)
     
+    def sigmoid_activation_function(self, z):
+        return (1/(1+np.exp(-z)))
+    
     def feed_forward(self, x, w, b):
         a = x
         for i in range(self.depth):
@@ -56,7 +59,7 @@ class ReLuSoftmaxFeedForwardNeuralNetwork():
                 a = self.relu(z)
             else:
                 z = self.z_function(a, w[i],b[i])
-                a = self.softmax(z)
+                a = self.sigmoid_activation_function(z) #self.softmax(z)
 
         return a
     
@@ -71,7 +74,7 @@ class ReLuSoftmaxFeedForwardNeuralNetwork():
                 a = self.relu(z)
             else:
                 z = self.z_function(a, w[i], b[i])
-                a = self.softmax(z)
+                a = self.sigmoid_activation_function(z) #self.softmax(z)
                 
             all_layer_activation.append(a)
         
@@ -158,14 +161,12 @@ def main():
     epoch = 500
     bias = False
 
-    nn = ReLuSoftmaxFeedForwardNeuralNetwork(nodes=nodes, learning_rate=learning_rate, epoch=epoch, bias=bias)
+    nn = ReLuFeedForwardNeuralNetwork(nodes=nodes, learning_rate=learning_rate, epoch=epoch, bias=bias)
 
     w, b = nn.train(x, y, nn.weights, nn.b, epoch, learning_rate)
     print(nn.predict(x[0], w, b))
     print(nn.predict(x[1], w, b))
     print(nn.predict(x[2], w, b))
 
-    
-main()
 
 
