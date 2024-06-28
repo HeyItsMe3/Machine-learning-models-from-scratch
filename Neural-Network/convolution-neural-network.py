@@ -6,14 +6,15 @@ import time
 
 
 class FeatureExtraction:
-    def __init__(self, strides, kernals, bias=True):
+    def __init__(self, strides, kernals, pad, bias=True):
         self.strides = strides
         self.kernals = kernals
+        self.pad = pad
         self.bias = bias
         self.b = []
 
     def padding(self, x):
-        return np.pad(x, 1, mode='constant', constant_values=0)
+        return np.pad(x, ((self.pad, self.pad), (self.pad, self.pad)), mode='constant', constant_values=0)
     
     def convolution_function(self, x, f):
         return np.sum(x*f)
@@ -24,17 +25,17 @@ class FeatureExtraction:
     def convolution_activation(self, x):
         return np.maximum(x, 0)
     
-    def convolution_layer(self, x):
+    def convolution_layer(self, x): # Here x is a 2d array
         f = len(self.kernals[0])
         n = len(x)
         m = len(x[0])
         k = len(self.kernals)
-        new_x = np.zeros((k, n-f+1, m-f+1)) # Depth, Rows, Columns
+        new_x = np.zeros((k, (n-f)//self.strides+1, (m-f)//self.strides+1)) # Depth, Height, Width
         #print(f"new_x : {new_x}")
-        for k in range(k):
-            for i in range(n-f+1):
-                for j in range(m-f+1) :
-                    new_x[k,i,j] = self.convolution_function(x[i:i+f, j:j+f], self.kernals[k])
+        for i in range(0, k):
+            for j in range(0, n-f+1, self.strides):
+                for l in range(0, m-f+1, self.strides):
+                    new_x[i, j//self.strides, l//self.strides] = self.kernel(x[j:j+f, l:l+f])[i]
 
         # After activation function
         b = np.random.rand(1, k)*0.01
@@ -42,6 +43,9 @@ class FeatureExtraction:
             new_x = self.convolution_activation(new_x + b)
         else:
             new_x = self.convolution_activation(new_x)
+
+        # cast the output to float --WHY?
+        new_x = new_x.astype(float)
         return new_x
     
     def max_pooling(self, x): # Here x is 2d array
@@ -297,5 +301,25 @@ def main():
 
     print(f"Time taken: {end-start}")
     
-if __name__ == "__main__":
-    main()
+def test():
+    strides = 3
+    kernals = np.array([[[1, 2, 3],
+                         [-4, 7, 4],
+                         [2, -5, 1]]])
+    
+    x = np.array([[2,4,9,1,4],
+                  [2,1,4,4,6],
+                  [1,1,2,9,2],
+                  [7,3,5,1,3],
+                  [2,3,4,8,5]])
+    
+    pad = 1
+    feature_extraction = FeatureExtraction(strides, kernals, pad, bias = False)
+    padding = feature_extraction.padding(x) 
+
+    print(f"Padding: {padding}")
+    convoluted_output = feature_extraction.convolution_layer(padding)
+    print(f"Convoluted output: {convoluted_output}")
+
+
+test()

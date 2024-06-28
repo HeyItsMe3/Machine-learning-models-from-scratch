@@ -39,7 +39,7 @@ def run():
     x_val = x[4900:]
     y_val = y[4900:]
 
-    
+      
     #nn = SigmoidalFeedForwardNeuralNetwork(nodes=nodes, learning_rate=learning_rate, epoch=epoch, bias=bias) # Gradient vanishing issue
     #nn = SigmoidalFeedForwardNeuralNetworkMetricsApproach(nodes=nodes, learning_rate=learning_rate, epoch=epoch, bias=bias) # Gradient vanishing issue
     nn = ReLuFeedForwardNeuralNetwork(nodes=nodes, learning_rate=learning_rate, epoch=epoch, bias=bias) # perfect! >91 percent accuracy
