@@ -234,9 +234,9 @@ def main():
                         [[1, 1, 1],
                          [0, 0, 0],
                          [-1, -1, -1]]])
-    
+    pad = 1
     # Creating the object of the ConvolutionNeuralNetwork class
-    feature_extraction = FeatureExtraction(strides, kernals, bias = False)
+    feature_extraction = FeatureExtraction(strides, kernals, pad, bias = False)
 
     # convolution layey/Feature extraction
     nn_input = []
@@ -322,4 +322,5 @@ def test():
     print(f"Convoluted output: {convoluted_output}")
 
 
-test()
+#test()
+main()
