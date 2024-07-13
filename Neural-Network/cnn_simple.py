@@ -51,6 +51,15 @@ input_image = np.random.randn(8, 8)
 true_label = np.zeros((10, 1))
 true_label[3] = 1  # Suppose the correct class is 3
 
+def convolution_function(x, f):
+    return np.sum(x*f)
+    
+def kernel(x):
+    return np.array([convolution_activation(convolution_function(x, conv1_filters[i])) for i in conv1_filters.shape[0]])
+
+def convolution_activation(x):
+    return np.maximum(x, 0)
+
 # Forward Pass
 # Convolution
 conv1_output = np.array([relu(np.correlate(input_image, conv1_filters[i], mode='valid')) for i in range(conv1_filters.shape[0])])
